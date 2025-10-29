@@ -1,54 +1,75 @@
 <!DOCTYPE html>
-<html lang="zh-Hans">
+<html lang="zh-CN">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#101114">
-  <title>答题 - 小诺的方向雷达</title>
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
-  <link rel="stylesheet" href="styles.css">
-  <script defer src="app.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111111" />
+  <title>问答评估 | 小诺导航</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <!-- 不提供 Apple Touch Icon 或 manifest，因仓库限制不提交 PNG/JSON 二进制 -->
 </head>
-<body class="theme-dark">
+<body data-page="quiz">
   <a class="skip-link" href="#main">跳到主要内容</a>
-  <header>
-    <nav data-nav="main" class="nav">
-      <a class="nav__brand" href="index.html">小诺雷达</a>
-      <div class="nav__links">
-        <a href="learn.html">资讯</a>
-        <a href="quiz.html#start" data-action="restart">重新开始</a>
+  <header class="site-header">
+    <nav class="nav">
+      <div class="brand-mark">
+        <a class="brand-word" href="index.html">小诺导航</a>
+        <span class="mascot-shell" data-mascot data-state="thinking" aria-hidden="true"></span>
+      </div>
+      <div class="nav-links">
+        <a href="learn.html" class="link">资讯</a>
+        <button class="button ghost" data-action="restart" type="button">重新开始</button>
       </div>
     </nav>
   </header>
-  <main id="main">
-    <section data-hero="main" class="hero hero--compact">
-      <div class="hero__copy">
-        <p class="eyebrow">不打分，只问问题</p>
-        <h1 class="hero__title">小诺陪你拆解路线</h1>
-        <p class="hero__subtitle">引导页：不打分，只问问题；答案在你心里。</p>
-        <button class="btn btn--primary" data-start>我准备好了</button>
-        <button class="btn btn--ghost" data-skip-intro>直接进入第 1 题</button>
-        <details class="note">
-          <summary>小提示</summary>
-          <p>第一反应通常最真诚。也随时可以选“不确定”。</p>
-        </details>
+  <main id="main" class="quiz" data-quiz>
+    <section class="quiz-intro" data-intro>
+      <p class="intro-kicker">不打分，只问问题。</p>
+      <h1>跟着小诺，七个问题，想清楚下一站。</h1>
+      <p class="intro-body">第一反应通常最真诚。准备好就开始。</p>
+      <div class="intro-actions">
+        <button class="button primary" type="button" data-action="begin">开始</button>
+        <a class="button ghost" href="index.html">回到首页</a>
       </div>
-      <figure class="hero__visual hero__visual--compact">
-        <img class="mascot" src="brand/mascot.svg" alt="小诺思考中" data-state="thinking">
-        <div class="suggestion" role="status" aria-live="polite" hidden></div>
-      </figure>
     </section>
-
-    <div data-progress="line" class="progress" aria-hidden="true">
-      <div class="progress__bar"></div>
-    </div>
-
-    <section id="slides" class="slides" aria-live="polite" aria-label="问答流程">
-      <!-- JS 注入题目与结果 -->
+    <section class="quiz-body" data-flow hidden>
+      <div class="suggestion" role="status" hidden></div>
+      <div class="progress-wrap" aria-live="polite">
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-bar"></div>
+        </div>
+        <p class="progress-label"><span data-progress-count>0</span>% 完成</p>
+      </div>
+      <article class="question-card" data-question></article>
+      <aside class="helper" data-helper>
+        <button class="helper-toggle" type="button" aria-expanded="false">提示：第一反应通常最真诚</button>
+        <div class="helper-body" hidden>
+          <p>如果都不像你，就选“不了解/跳过”。小诺会自动平衡。</p>
+        </div>
+      </aside>
+    </section>
+    <section class="quiz-result" data-result hidden>
+      <header class="result-head">
+        <span class="mascot-shell" data-mascot data-state="idea" aria-hidden="true"></span>
+        <div>
+          <p class="result-kicker">今日答案</p>
+          <h2>推荐：<span data-top-destination></span></h2>
+        </div>
+      </header>
+      <div class="result-bars" role="list"></div>
+      <p class="result-reason" data-rationale></p>
+      <p class="share-status" data-share-status hidden aria-live="polite"></p>
+      <div class="result-actions">
+        <button class="button primary" type="button" data-action="share">复制结果链接</button>
+        <button class="button ghost" type="button" data-action="print">打印</button>
+        <button class="button ghost" type="button" data-action="restart">重新开始</button>
+      </div>
     </section>
   </main>
-  <footer class="footer">
-    <small>这是此刻的你；过段时间再来，可能会变。</small>
+  <footer class="site-footer">
+    <p>今天的你选了这个方向；下一次，可能不一样。</p>
   </footer>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

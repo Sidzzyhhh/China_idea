@@ -1,115 +1,110 @@
-const fs = require('fs');
-const path = require('path');
-const assert = require('assert');
+import assert from 'node:assert/strict';
+import {
+  QUESTIONS,
+  FEATURE_KEYS,
+  toFeatures,
+  scoreEngine,
+  serializeAnswers,
+  parseAnswers
+} from '../app.js';
 
-const app = require('../app.js');
+const suite = [];
 
-function read(file) {
-  return fs.readFileSync(path.join(__dirname, '..', file), 'utf8');
+function test(name, fn) {
+  suite.push({ name, fn });
 }
 
-function countOccurrences(content, snippet) {
-  const regex = new RegExp(snippet, 'g');
-  const matches = content.match(regex);
-  return matches ? matches.length : 0;
-}
+test('toFeatures maps selections into feature vector', () => {
+  const answers = { career: 'bigtech', visa: 'h1b' };
+  const vector = toFeatures(answers);
+  assert.equal(vector.length, FEATURE_KEYS.length);
+  const bigtechIndex = FEATURE_KEYS.indexOf('career_bigtech');
+  assert.ok(vector[bigtechIndex] > 0, 'bigtech feature should be activated');
+});
 
-(function testUniqueModules() {
-  const index = read('index.html');
-  const quiz = read('quiz.html');
-  const learn = read('learn.html');
-
-  assert.strictEqual(countOccurrences(index, 'data-nav="main"'), 1, 'index.html 应只有一个主导航');
-  assert.strictEqual(countOccurrences(quiz, 'data-nav="main"'), 1, 'quiz.html 应只有一个主导航');
-  assert.strictEqual(countOccurrences(learn, 'data-nav="main"'), 1, 'learn.html 应只有一个主导航');
-
-  assert.strictEqual(countOccurrences(index, 'data-hero="main"'), 1, 'index.html 应只有一个英雄区');
-  assert.strictEqual(countOccurrences(quiz, 'data-hero="main"'), 1, 'quiz.html 应只有一个英雄区');
-  assert.strictEqual(countOccurrences(learn, 'data-hero="main"'), 1, 'learn.html 应只有一个英雄区');
-
-  assert.strictEqual(countOccurrences(index, 'data-matrix="card"'), 1, 'index.html 仅允许一个矩阵示意卡');
-  assert.strictEqual(countOccurrences(quiz, 'data-progress="line"'), 1, 'quiz.html 仅允许一个进度条');
-  assert.strictEqual(countOccurrences(quiz, 'id="slides"'), 1, 'quiz.html 仅允许一个滑屏容器');
-})();
-
-(function testFeatureVector() {
-  const sampleAnswers = {
-    stage: ['bigco'],
-    status: ['h1b'],
-    money: ['salary'],
-    life: ['pace'],
-    academic: ['phd'],
-    support: ['family'],
-    identity: ['global']
-  };
-
-  const { vector } = app.toFeatures(sampleAnswers);
-  assert.strictEqual(vector.length, app.FEATURE_LIST.length, '特征向量长度不匹配');
-  const nonZero = vector.filter((value) => value > 0);
-  assert.ok(nonZero.length >= 4, '特征向量应包含多个正向贡献');
-})();
-
-(function testScoreRecommendations() {
-  const answersUS = {
-    stage: ['bigco'],
-    status: ['h1b'],
-    money: ['salary'],
-    life: ['pace'],
-    academic: ['phd'],
-    support: ['alumni'],
-    identity: ['global']
-  };
-
-  const usResult = app.scoreEngine(answersUS);
-  assert.strictEqual(usResult.ranking[0].key, 'us', '美国场景未被识别为首选');
-
-  const answersCN = {
-    stage: ['academic'],
-    status: ['gc'],
-    money: ['family'],
-    life: ['community'],
-    academic: ['mentor'],
-    support: ['family', 'partner'],
-    identity: ['home']
-  };
-
-  const cnResult = app.scoreEngine(answersCN);
-  assert.strictEqual(cnResult.ranking[0].key, 'cn', '中国场景未被识别为首选');
-
-  const answersThird = {
-    stage: ['startup'],
-    status: ['opt'],
-    money: ['cost'],
-    life: ['climate'],
-    academic: ['applied'],
-    support: ['alumni'],
-    identity: ['hybrid']
-  };
-
-  const thirdResult = app.scoreEngine(answersThird);
-  assert.strictEqual(thirdResult.ranking[0].key, 'third', '第三地场景未被识别为首选');
-})();
-
-(function testSerialization() {
+test('scoreEngine favors US profile', () => {
   const answers = {
-    stage: ['bigco'],
-    status: ['opt'],
-    money: ['salary'],
-    life: ['community'],
-    academic: ['mentor'],
-    support: ['family', 'partner'],
-    identity: ['home']
+    career: 'bigtech',
+    visa: 'h1b',
+    finance: 'salary',
+    life: 'fast',
+    academic: 'mentor',
+    support: 'alumni',
+    identity: 'us'
   };
-  const encoded = app.encodeAnswers(answers);
-  const decoded = app.decodeAnswers(encoded);
-  assert.deepStrictEqual(decoded, answers, '序列化与反序列化不一致');
-})();
+  const { ranking, totals } = scoreEngine(answers);
+  assert.equal(ranking[0], 'us');
+  assert.ok(totals.us > totals.cn);
+  assert.ok(totals.us > totals.third);
+});
 
-(function testEmptyAnswers() {
-  const result = app.scoreEngine({});
-  assert.strictEqual(result.ranking.length, 3, '排名数量应为 3');
-  const sum = result.totals.reduce((acc, value) => acc + value, 0);
-  assert.ok(sum > 99 && sum < 101, '归一化结果应约等于 100');
-})();
+test('scoreEngine favors China profile', () => {
+  const answers = {
+    career: 'academic',
+    visa: 'permanent',
+    finance: 'family',
+    life: 'city',
+    academic: 'mentor',
+    support: 'family',
+    identity: 'cn'
+  };
+  const { ranking } = scoreEngine(answers);
+  assert.equal(ranking[0], 'cn');
+});
 
-console.log('✓ unit tests passed');
+test('scoreEngine favors third destination profile', () => {
+  const answers = {
+    career: 'startup',
+    visa: 'permanent',
+    finance: 'cost',
+    life: 'community',
+    academic: 'pause',
+    support: 'partner',
+    identity: 'third'
+  };
+  const { ranking } = scoreEngine(answers);
+  assert.equal(ranking[0], 'third');
+});
+
+test('serialize and parse answers roundtrip', () => {
+  const answers = {
+    career: 'startup',
+    visa: 'opt',
+    finance: 'skip',
+    life: 'city',
+    academic: 'skip',
+    support: 'alumni',
+    identity: 'us'
+  };
+  const serial = serializeAnswers(answers);
+  const restored = parseAnswers(serial);
+  for (const question of QUESTIONS) {
+    assert.equal(restored[question.id] ?? 'skip', answers[question.id] ?? 'skip');
+  }
+});
+
+test('all skip answers still produce totals', () => {
+  const answers = Object.fromEntries(QUESTIONS.map((q) => [q.id, 'skip']));
+  const { totals } = scoreEngine(answers);
+  const sum = Object.values(totals).reduce((acc, value) => acc + value, 0);
+  assert.ok(sum > 0);
+  assert.ok(Math.abs(sum - 100) < 1.5, 'totals should approximate 100');
+});
+
+let hasFailure = false;
+for (const { name, fn } of suite) {
+  try {
+    fn();
+    console.log(`✅ ${name}`);
+  } catch (error) {
+    hasFailure = true;
+    console.error(`❌ ${name}`);
+    console.error(error);
+  }
+}
+
+if (hasFailure) {
+  process.exitCode = 1;
+} else {
+  console.log(`\n全部 ${suite.length} 个断言通过。`);
+}

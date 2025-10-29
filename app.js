@@ -1,623 +1,675 @@
-(function (global) {
-  const FEATURE_LIST = [
-    { key: 'scale', label: '大舞台' },
-    { key: 'startup', label: '创业弹性' },
-    { key: 'academia', label: '学术纵深' },
-    { key: 'visa', label: '身份稳定' },
-    { key: 'opt', label: '短期身份' },
-    { key: 'green', label: '长期身份' },
-    { key: 'salary', label: '收入空间' },
-    { key: 'cost', label: '成本敏感' },
-    { key: 'family', label: '家庭靠近' },
-    { key: 'community', label: '熟悉社群' },
-    { key: 'global', label: '全球探索' },
-    { key: 'research', label: '导师资源' },
-    { key: 'network', label: '人脉支持' },
-    { key: 'identity', label: '长期认同' }
-  ];
+const DESTINATIONS = ["us", "cn", "third"];
+const DEST_LABELS = {
+  us: "留在美国",
+  cn: "回到中国",
+  third: "探索第三地"
+};
 
-  const FEATURE_INDEX = FEATURE_LIST.reduce((acc, feature, index) => {
-    acc[feature.key] = index;
-    return acc;
-  }, {});
-
-  const DESTINATIONS = [
-    { key: 'us', name: '美国路径' },
-    { key: 'cn', name: '中国发展' },
-    { key: 'third', name: '第三地探索' }
-  ];
-
-  const QUESTIONS = [
-    {
-      id: 'stage',
-      title: '职业舞台',
-      subtitle: '你想先在哪种舞台证明自己？',
-      type: 'single',
-      options: [
-        { value: 'bigco', label: '大厂', features: { scale: 1, salary: 0.4, research: 0.2 } },
-        { value: 'startup', label: '初创', features: { startup: 1, global: 0.4 } },
-        { value: 'academic', label: '学术', features: { academia: 1, research: 1 } },
-        { value: 'unsure', label: '还不确定', features: {} }
-      ]
-    },
-    {
-      id: 'status',
-      title: '身份路径',
-      subtitle: '哪种身份安排最让你安心？',
-      type: 'single',
-      options: [
-        { value: 'h1b', label: 'H-1B 下注', features: { visa: 1, opt: 0.5 } },
-        { value: 'opt', label: 'OPT 或 STEM OPT', features: { opt: 1, global: 0.3 } },
-        { value: 'gc', label: '长期绿卡路径', features: { green: 1, family: 0.2 } },
-        { value: 'unknown', label: '不确定', features: {} }
-      ]
-    },
-    {
-      id: 'money',
-      title: '收入与成本',
-      subtitle: '先想钱，还是先顾生活成本？',
-      type: 'single',
-      options: [
-        { value: 'salary', label: '薪资预期', features: { salary: 1 } },
-        { value: 'cost', label: '生活成本', features: { cost: 1 } },
-        { value: 'family', label: '家庭支持', features: { family: 1, community: 0.5 } },
-        { value: 'unsure', label: '不确定', features: {} }
-      ]
-    },
-    {
-      id: 'life',
-      title: '生活方式',
-      subtitle: '什么样的日常让你心里踏实？',
-      type: 'single',
-      options: [
-        { value: 'pace', label: '城市节奏', features: { scale: 0.6, global: 0.4 } },
-        { value: 'community', label: '社区归属', features: { community: 1, family: 0.4 } },
-        { value: 'climate', label: '气候偏好', features: { global: 0.5 } },
-        { value: 'unsure', label: '不确定', features: {} }
-      ]
-    },
-    {
-      id: 'academic',
-      title: '学术路线',
-      subtitle: '你怎么规划下一段学习或研究？',
-      type: 'single',
-      options: [
-        { value: 'phd', label: '读博/博后', features: { academia: 0.8, research: 1 } },
-        { value: 'mentor', label: '导师资源', features: { research: 1, network: 0.6 } },
-        { value: 'applied', label: '应用项目', features: { startup: 0.4, scale: 0.4 } },
-        { value: 'unknown', label: '不确定', features: {} }
-      ]
-    },
-    {
-      id: 'support',
-      title: '支持网络',
-      subtitle: '谁会和你一起扛？（可多选）',
-      type: 'multi',
-      options: [
-        { value: 'family', label: '亲友', features: { family: 1, community: 0.6 } },
-        { value: 'partner', label: '伴侣', features: { identity: 0.6, community: 0.4 } },
-        { value: 'alumni', label: '校友圈', features: { network: 1 } },
-        { value: 'unsure', label: '不确定', features: {} }
-      ]
-    },
-    {
-      id: 'identity',
-      title: '长期认同',
-      subtitle: '五到十年后，你想怎么介绍自己？',
-      type: 'single',
-      options: [
-        { value: 'global', label: '全球游牧者', features: { global: 1, identity: 0.8 } },
-        { value: 'home', label: '回到熟悉圈子', features: { community: 0.8, family: 0.7, identity: 1 } },
-        { value: 'hybrid', label: '两边都熟的人', features: { global: 0.7, identity: 1 } },
-        { value: 'unsure', label: '还不确定', features: {} }
-      ]
-    }
-  ];
-
-  const WEIGHT_MATRIX = [
-    // us
-    [1.2, 0.4, 0.9, 0.8, 0.9, 0.2, 1.1, -0.4, -0.2, 0.2, 0.7, 1.0, 0.4, 0.5],
-    // cn
-    [0.8, 0.3, 0.6, 0.7, 0.2, 1.1, 0.6, 0.9, 1.2, 1.0, 0.2, 0.7, 1.1, 1.0],
-    // third
-    [0.6, 1.1, 0.4, 0.3, 0.5, 0.4, 0.7, 0.6, 0.2, 0.4, 1.3, 0.5, 0.6, 0.9]
-  ];
-
-  const BIAS = [0.2, 0.2, 0.2];
-
-  const FEATURE_REASON = {
-    scale: '你想站上更大的舞台',
-    startup: '你渴望掌控节奏',
-    academia: '你在乎学术纵深',
-    visa: '你优先考虑身份稳定',
-    opt: '你愿意先累积短期经验',
-    green: '你想要长期身份保障',
-    salary: '你盯着收入空间',
-    cost: '你关注生活成本',
-    family: '你希望离家近一些',
-    community: '你想留在熟悉的社群',
-    global: '你想换个世界视角',
-    research: '你要抓住导师资源',
-    network: '你重视人脉扶持',
-    identity: '你在寻找长期认同'
-  };
-
-  const STORAGE_KEY = 'nori-answers-v1';
-
-  function toFeatures(answerMap) {
-    const vector = new Array(FEATURE_LIST.length).fill(0);
-    const contributions = new Array(FEATURE_LIST.length).fill(0);
-
-    QUESTIONS.forEach((question) => {
-      const selections = answerMap[question.id] || [];
-      selections.forEach((value) => {
-        const option = question.options.find((opt) => opt.value === value);
-        if (!option) return;
-        Object.entries(option.features).forEach(([featureKey, weight]) => {
-          if (FEATURE_INDEX[featureKey] === undefined) return;
-          const idx = FEATURE_INDEX[featureKey];
-          vector[idx] += weight;
-          contributions[idx] += weight;
-        });
-      });
-    });
-
-    return { vector, contributions };
+export const QUESTIONS = [
+  {
+    id: "career",
+    title: "你想在哪种舞台发力?",
+    prompt: "选一个最贴近现在心情的选项。",
+    helper: "想像你下一个18个月的状态，别纠结完美答案。",
+    options: [
+      { value: "bigtech", label: "成熟大厂，资源齐备" },
+      { value: "startup", label: "小团队，动作快" },
+      { value: "academic", label: "学术/实验室，继续钻研" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
+  },
+  {
+    id: "visa",
+    title: "你最在意的身份路径?",
+    prompt: "签证和居留的哪个环节让你最上心?",
+    helper: "可以带着一点焦虑选项，这本来就是需要面对的。",
+    options: [
+      { value: "h1b", label: "H-1B 抽签或赞助" },
+      { value: "opt", label: "OPT/STEM OPT 延长" },
+      { value: "permanent", label: "长期绿卡或永居" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
+  },
+  {
+    id: "finance",
+    title: "财务底气更靠什么?",
+    prompt: "哪种支撑让你敢走这一步?",
+    helper: "钱够不够，是节奏问题，不是羞于开口的话题。",
+    options: [
+      { value: "salary", label: "高薪和奖金" },
+      { value: "cost", label: "低生活成本" },
+      { value: "family", label: "家庭支持/储蓄" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
+  },
+  {
+    id: "life",
+    title: "生活节奏你想要哪种?",
+    prompt: "想到居住城市时，脑中浮现什么画面?",
+    helper: "越具体越好，通勤、氛围、社群都算。",
+    options: [
+      { value: "fast", label: "高速节奏，机会密集" },
+      { value: "city", label: "国际都市，文化混合" },
+      { value: "community", label: "紧密社区，有熟面孔" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
+  },
+  {
+    id: "academic",
+    title: "学术规划在你心里排第几?",
+    prompt: "接下来三年，你还想深挖研究吗?",
+    helper: "就算答不确定，也是一种答案。",
+    options: [
+      { value: "deep", label: "继续做研究/读博" },
+      { value: "mentor", label: "想要强导师和平台" },
+      { value: "pause", label: "暂时搁置学术" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
+  },
+  {
+    id: "support",
+    title: "谁在你身边撑你?",
+    prompt: "现实里，哪个支持网络最牢靠?",
+    helper: "别想标准答案，只想你信任的人。",
+    options: [
+      { value: "family", label: "父母或亲人" },
+      { value: "partner", label: "伴侣或密友" },
+      { value: "alumni", label: "校友/同行社群" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
+  },
+  {
+    id: "identity",
+    title: "未来五到十年，你更像哪里的人?",
+    prompt: "此刻直觉最重要。",
+    helper: "认同感没有标准答案，今天的感觉就好。",
+    options: [
+      { value: "us", label: "更像美国人" },
+      { value: "cn", label: "更像中国人" },
+      { value: "third", label: "想做世界公民" },
+      { value: "skip", label: "不了解/跳过", isSkip: true }
+    ]
   }
+];
 
-  function scoreEngine(answerMap) {
-    const { vector, contributions } = toFeatures(answerMap);
-    const rawScores = DESTINATIONS.map((dest, rowIndex) => {
-      const weights = WEIGHT_MATRIX[rowIndex];
-      let sum = BIAS[rowIndex] || 0;
-      weights.forEach((w, colIndex) => {
-        sum += w * vector[colIndex];
-      });
-      return sum;
-    });
+export const FEATURE_KEYS = [
+  "career_bigtech",
+  "career_startup",
+  "career_academic",
+  "career_skip",
+  "visa_h1b",
+  "visa_opt",
+  "visa_permanent",
+  "visa_skip",
+  "finance_salary",
+  "finance_cost",
+  "finance_family",
+  "finance_skip",
+  "life_fast",
+  "life_city",
+  "life_community",
+  "life_skip",
+  "academic_deep",
+  "academic_mentor",
+  "academic_pause",
+  "academic_skip",
+  "support_family",
+  "support_partner",
+  "support_alumni",
+  "support_skip",
+  "identity_us",
+  "identity_cn",
+  "identity_third",
+  "identity_skip"
+];
 
-    const maxRaw = Math.max(...rawScores);
-    const expScores = rawScores.map((score) => Math.exp(score - maxRaw));
-    const expSum = expScores.reduce((acc, value) => acc + value, 0);
-    const totals = expScores.map((value) => Math.round((value / expSum) * 1000) / 10);
+const FEATURE_INDEX = FEATURE_KEYS.reduce((acc, key, idx) => {
+  acc[key] = idx;
+  return acc;
+}, {});
 
-    const ranking = DESTINATIONS
-      .map((dest, index) => ({ key: dest.key, name: dest.name, total: totals[index], raw: rawScores[index], rowIndex: index }))
-      .sort((a, b) => b.total - a.total || b.raw - a.raw);
-
-    const top = ranking[0];
-    let rationale = '答案还太模糊，下次可以多选几个选项。';
-
-    if (top) {
-      const weights = WEIGHT_MATRIX[top.rowIndex];
-      const contributionsByFeature = FEATURE_LIST.map((feature, index) => ({
-        key: feature.key,
-        label: feature.label,
-        value: contributions[index] * weights[index]
-      }));
-
-      const sortedReasons = contributionsByFeature
-        .filter((item) => item.value > 0.05)
-        .sort((a, b) => b.value - a.value)
-        .slice(0, 2);
-
-      if (sortedReasons.length > 0) {
-        const parts = sortedReasons.map((item) => FEATURE_REASON[item.key] || `你在意${item.label}`);
-        rationale = `${parts.join('，')}，${top.name}更对味。`;
-      } else {
-        rationale = `你给出的答案指向 ${top.name}。再多尝试几轮，方向会更清晰。`;
-      }
-    }
-
-    return { totals, ranking, rationale };
+const FEATURE_RULES = {
+  career: {
+    bigtech: { career_bigtech: 1, identity_us: 0.2 },
+    startup: { career_startup: 1, identity_third: 0.2 },
+    academic: { career_academic: 1, academic_deep: 0.3 },
+    skip: { career_skip: 1 }
+  },
+  visa: {
+    h1b: { visa_h1b: 1, identity_us: 0.2 },
+    opt: { visa_opt: 1, career_startup: 0.2 },
+    permanent: { visa_permanent: 1, identity_third: 0.2 },
+    skip: { visa_skip: 1 }
+  },
+  finance: {
+    salary: { finance_salary: 1, life_fast: 0.2 },
+    cost: { finance_cost: 1, life_community: 0.2 },
+    family: { finance_family: 1, support_family: 0.3 },
+    skip: { finance_skip: 1 }
+  },
+  life: {
+    fast: { life_fast: 1 },
+    city: { life_city: 1, identity_us: 0.2 },
+    community: { life_community: 1, identity_third: 0.2 },
+    skip: { life_skip: 1 }
+  },
+  academic: {
+    deep: { academic_deep: 1 },
+    mentor: { academic_mentor: 1, career_bigtech: 0.2 },
+    pause: { academic_pause: 1 },
+    skip: { academic_skip: 1 }
+  },
+  support: {
+    family: { support_family: 1, finance_family: 0.2 },
+    partner: { support_partner: 1 },
+    alumni: { support_alumni: 1, career_startup: 0.2 },
+    skip: { support_skip: 1 }
+  },
+  identity: {
+    us: { identity_us: 1 },
+    cn: { identity_cn: 1 },
+    third: { identity_third: 1 },
+    skip: { identity_skip: 1 }
   }
+};
 
-  function encodeAnswers(answerMap) {
-    const json = JSON.stringify(answerMap);
-    if (typeof window !== 'undefined' && window.btoa) {
-      return window.btoa(json);
-    }
-    return Buffer.from(json, 'utf8').toString('base64');
-  }
+const FEATURE_REASONS = {
+  career_bigtech: "你看重成熟平台",
+  career_startup: "你想要灵活和速度",
+  career_academic: "你对学术舞台上心",
+  visa_h1b: "身份风险在你心上",
+  visa_opt: "你想多争取过渡时间",
+  visa_permanent: "你盼着长期稳住身份",
+  finance_salary: "你需要薪水拉满",
+  finance_cost: "你希望成本可控",
+  finance_family: "家人的支持让你踏实",
+  life_fast: "你能接受快节奏",
+  life_city: "你向往国际都市",
+  life_community: "你更想要熟悉社区",
+  academic_deep: "你还想继续深挖研究",
+  academic_mentor: "你需要导师资源",
+  academic_pause: "你想先跳出学术",
+  support_family: "家人支撑很关键",
+  support_partner: "伴侣的节奏影响你",
+  support_alumni: "同侪网络给你能量",
+  identity_us: "你更像在美国扎根",
+  identity_cn: "你心底牵着中国",
+  identity_third: "你想做全球游牧",
+  identity_skip: "你还在寻找新的认同"
+};
 
-  function decodeAnswers(param) {
-    if (!param) return {};
-    try {
-      const json = typeof window !== 'undefined' && window.atob ? window.atob(param) : Buffer.from(param, 'base64').toString('utf8');
-      const parsed = JSON.parse(json);
-      return Object.keys(parsed).reduce((acc, key) => {
-        const value = parsed[key];
-        acc[key] = Array.isArray(value) ? value : [];
-        return acc;
-      }, {});
-    } catch (error) {
-      return {};
-    }
-  }
+const WEIGHT_MATRIX = {
+  us: new Float32Array([
+    1.1, 0.2, 0.4, 0, // career
+    1.3, 0.6, 0.3, 0, // visa
+    1.0, 0.3, 0.2, 0, // finance
+    0.8, 0.5, 0.3, 0, // life
+    0.6, 0.7, 0.1, 0, // academic
+    0.5, 0.4, 0.6, 0, // support
+    1.4, 0.3, 0.2, 0 // identity
+  ]),
+  cn: new Float32Array([
+    0.7, 0.5, 0.4, 0.1,
+    0.4, 0.2, 0.5, 0.1,
+    0.5, 0.6, 1.1, 0.2,
+    0.5, 0.6, 0.5, 0.1,
+    0.4, 0.5, 0.3, 0.1,
+    1.2, 0.8, 0.4, 0.2,
+    0.5, 1.4, 0.3, 0.2
+  ]),
+  third: new Float32Array([
+    0.5, 1.3, 0.8, 0.2,
+    0.3, 0.9, 1.4, 0.3,
+    0.4, 1.1, 0.5, 0.2,
+    0.6, 0.9, 1.3, 0.3,
+    0.6, 0.4, 0.7, 0.2,
+    0.6, 0.7, 0.9, 0.3,
+    0.3, 0.4, 1.5, 0.3
+  ])
+};
 
-  function persistState(answerMap, currentIndex) {
-    if (typeof localStorage === 'undefined') return;
-    const payload = { answers: answerMap, index: currentIndex };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-  }
+const BIAS = {
+  us: 0.2,
+  cn: 0.1,
+  third: 0.1
+};
 
-  function restoreState() {
-    if (typeof localStorage === 'undefined') return null;
-    try {
-      const stored = localStorage.getItem(STORAGE_KEY);
-      if (!stored) return null;
-      const parsed = JSON.parse(stored);
-      return parsed;
-    } catch (error) {
-      return null;
+const STORAGE_KEY = "nori-flow-v2";
+
+export function toFeatures(answerMap = {}) {
+  const vector = new Float32Array(FEATURE_KEYS.length);
+  for (const question of QUESTIONS) {
+    const chosen = answerMap[question.id];
+    const useValue = chosen ?? "skip";
+    const mapping = FEATURE_RULES[question.id][useValue];
+    if (!mapping) continue;
+    for (const [featureKey, value] of Object.entries(mapping)) {
+      const idx = FEATURE_INDEX[featureKey];
+      if (idx === undefined) continue;
+      vector[idx] += value;
     }
   }
+  return vector;
+}
 
-  function clearState() {
-    if (typeof localStorage === 'undefined') return;
-    localStorage.removeItem(STORAGE_KEY);
+function dot(weights, vector) {
+  let sum = 0;
+  for (let i = 0; i < vector.length; i += 1) {
+    sum += weights[i] * vector[i];
   }
+  return sum;
+}
 
-  function setupBrowser() {
-    if (typeof document === 'undefined') return;
-    const slidesContainer = document.querySelector('#slides');
-    const progressBar = document.querySelector('.progress__bar');
-    const suggestionEl = document.querySelector('.suggestion');
-    const hero = document.querySelector('[data-hero="main"]');
-
-    if (!slidesContainer || !progressBar) return;
-
-    const params = new URLSearchParams(window.location.search);
-    const hash = window.location.hash;
-
-    let state = restoreState() || { answers: {}, index: 0 };
-
-    if (params.has('a')) {
-      state.answers = decodeAnswers(params.get('a'));
-      state.index = QUESTIONS.length;
-    }
-
-    if (hash === '#start') {
-      state.index = 0;
-    }
-
-    if (params.has('suggest') && suggestionEl) {
-      const target = params.get('suggest');
-      const match = DESTINATIONS.find((dest) => dest.key === target);
-      if (match) {
-        suggestionEl.hidden = false;
-        suggestionEl.textContent = `小诺提示：可以优先看看 ${match.name}`;
-      }
-    }
-
-    renderSlides(slidesContainer, state.answers);
-    updateUI(state.index);
-
-    const startButton = document.querySelector('[data-start]');
-    const skipIntroButton = document.querySelector('[data-skip-intro]');
-    const restartLinks = document.querySelectorAll('[data-action="restart"]');
-
-    if (startButton) {
-      startButton.addEventListener('click', () => {
-        hero.setAttribute('hidden', '');
-        state.index = 0;
-        updateUI(state.index);
-        persistState(state.answers, state.index);
-        slidesContainer.focus();
-      });
-    }
-
-    if (skipIntroButton) {
-      skipIntroButton.addEventListener('click', () => {
-        hero.setAttribute('hidden', '');
-        state.index = 0;
-        updateUI(state.index);
-        persistState(state.answers, state.index);
-      });
-    }
-
-    restartLinks.forEach((link) => {
-      link.addEventListener('click', (event) => {
-        event.preventDefault();
-        clearState();
-        state = { answers: {}, index: 0 };
-        renderSlides(slidesContainer, state.answers);
-        updateUI(state.index);
-        hero.removeAttribute('hidden');
-        window.history.replaceState({}, '', 'quiz.html#start');
-      });
-    });
-
-    slidesContainer.addEventListener('change', (event) => {
-      const target = event.target;
-      const slideEl = target.closest('.slide');
-      if (!slideEl) return;
-      const questionId = slideEl.dataset.question;
-      const question = QUESTIONS.find((q) => q.id === questionId);
-      if (!question) return;
-
-      if (question.type === 'single') {
-        state.answers[questionId] = [target.value];
-      } else {
-        const selected = Array.from(slideEl.querySelectorAll('input[type="checkbox"]:checked')).map((input) => input.value);
-        state.answers[questionId] = selected;
-      }
-      persistState(state.answers, state.index);
-      updateButtonState(slideEl, question, state.answers[questionId]);
-    });
-
-    slidesContainer.addEventListener('click', (event) => {
-      const button = event.target.closest('button[data-action]');
-      if (!button) return;
-      const action = button.dataset.action;
-      if (action === 'prev') {
-        state.index = Math.max(0, state.index - 1);
-      }
-      if (action === 'next') {
-        state.index = Math.min(QUESTIONS.length, state.index + 1);
-      }
-      if (action === 'finish') {
-        state.index = QUESTIONS.length;
-      }
-      persistState(state.answers, state.index);
-      updateUI(state.index);
-    });
-
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'ArrowRight') {
-        event.preventDefault();
-        const nextButton = slidesContainer.querySelector('.slide[data-active="true"] button[data-action="next"], .slide[data-active="true"] button[data-action="finish"]');
-        if (nextButton && !nextButton.disabled) {
-          nextButton.click();
-        }
-      }
-      if (event.key === 'ArrowLeft') {
-        event.preventDefault();
-        const prevButton = slidesContainer.querySelector('.slide[data-active="true"] button[data-action="prev"]');
-        if (prevButton) {
-          prevButton.click();
-        }
-      }
-    });
-
-    function updateUI(index) {
-      const slides = Array.from(slidesContainer.querySelectorAll('.slide'));
-      slides.forEach((slide, slideIndex) => {
-        const active = slideIndex === index;
-        slide.dataset.active = active ? 'true' : 'false';
-        slide.hidden = !active;
-      });
-
-      const progress = index >= QUESTIONS.length ? 100 : Math.round((index / QUESTIONS.length) * 100);
-      progressBar.style.width = `${progress}%`;
-
-      if (index > 0) {
-        hero.setAttribute('hidden', '');
-      }
-
-      slides.forEach((slide) => {
-        const questionId = slide.dataset.question;
-        const question = QUESTIONS.find((q) => q.id === questionId);
-        if (!question) return;
-        const answers = state.answers[questionId] || [];
-        updateButtonState(slide, question, answers);
-      });
-
-      if (index === QUESTIONS.length) {
-        renderResult(slidesContainer, state.answers);
-      }
-    }
-
-    function updateButtonState(slideEl, question, answers) {
-      const nextButton = slideEl.querySelector('button[data-action="next"], button[data-action="finish"]');
-      if (!nextButton) return;
-      const hasAnswer = Array.isArray(answers) && answers.length > 0;
-      nextButton.disabled = !hasAnswer;
-    }
-
-    function renderSlides(container, answers) {
-      container.innerHTML = '';
-      QUESTIONS.forEach((question, index) => {
-        const slide = document.createElement('article');
-        slide.className = 'slide';
-        slide.dataset.question = question.id;
-        slide.dataset.active = 'false';
-        slide.hidden = true;
-        slide.setAttribute('aria-labelledby', `${question.id}-title`);
-
-        const meta = document.createElement('div');
-        meta.className = 'slide__meta';
-        meta.innerHTML = `<span>${index + 1} / ${QUESTIONS.length}</span><span>${Math.round(((index + 1) / QUESTIONS.length) * 100)}%</span>`;
-
-        const title = document.createElement('h2');
-        title.className = 'slide__title';
-        title.id = `${question.id}-title`;
-        title.textContent = question.title;
-
-        const subtitle = document.createElement('p');
-        subtitle.className = 'hero__subtitle';
-        subtitle.textContent = question.subtitle;
-
-        const optionsWrap = document.createElement('div');
-        optionsWrap.className = 'options';
-
-        question.options.forEach((option) => {
-          const optionId = `${question.id}-${option.value}`;
-          const optionEl = document.createElement('div');
-          optionEl.className = 'option';
-
-          const input = document.createElement('input');
-          input.id = optionId;
-          input.name = question.id;
-          input.value = option.value;
-          input.type = question.type === 'multi' ? 'checkbox' : 'radio';
-          input.required = false;
-
-          if (answers[question.id] && answers[question.id].includes(option.value)) {
-            input.checked = true;
-          }
-
-          const label = document.createElement('label');
-          label.setAttribute('for', optionId);
-          label.textContent = option.label;
-
-          optionEl.appendChild(label);
-          optionEl.appendChild(input);
-          optionsWrap.appendChild(optionEl);
-        });
-
-        const controls = document.createElement('div');
-        controls.className = 'controls';
-
-        const prevBtn = document.createElement('button');
-        prevBtn.className = 'btn btn--ghost';
-        prevBtn.type = 'button';
-        prevBtn.dataset.action = 'prev';
-        prevBtn.textContent = '上一步';
-        prevBtn.disabled = index === 0;
-
-        const nextBtn = document.createElement('button');
-        nextBtn.className = 'btn btn--primary';
-        nextBtn.type = 'button';
-        nextBtn.dataset.action = index === QUESTIONS.length - 1 ? 'finish' : 'next';
-        nextBtn.textContent = index === QUESTIONS.length - 1 ? '看结果' : '下一步';
-        nextBtn.disabled = !(answers[question.id] && answers[question.id].length > 0);
-
-        controls.appendChild(prevBtn);
-        controls.appendChild(nextBtn);
-
-        slide.appendChild(meta);
-        slide.appendChild(title);
-        slide.appendChild(subtitle);
-        slide.appendChild(optionsWrap);
-        slide.appendChild(controls);
-
-        container.appendChild(slide);
-      });
-
-      const resultSlide = document.createElement('article');
-      resultSlide.className = 'slide';
-      resultSlide.dataset.question = 'result';
-      resultSlide.dataset.active = 'false';
-      resultSlide.hidden = true;
-      container.appendChild(resultSlide);
-    }
-
-    function renderResult(container, answers) {
-      const resultSlide = container.querySelector('.slide[data-question="result"]');
-      if (!resultSlide) return;
-      resultSlide.innerHTML = '';
-      resultSlide.dataset.active = 'true';
-      resultSlide.hidden = false;
-
-      const { ranking, totals, rationale } = scoreEngine(answers);
-      const top = ranking[0];
-
-      const title = document.createElement('h2');
-      title.className = 'result__title';
-      title.textContent = top ? `推荐：${top.name}` : '暂时没有结果';
-
-      const bars = document.createElement('div');
-      bars.className = 'result__bars';
-
-      ranking.forEach((item) => {
-        const bar = document.createElement('div');
-        bar.className = 'result__bar';
-        const label = document.createElement('span');
-        label.textContent = `${item.name}`;
-        const track = document.createElement('div');
-        track.style.setProperty('--value', `${item.total}%`);
-        const value = document.createElement('strong');
-        value.textContent = `${item.total.toFixed(1)}%`;
-        bar.appendChild(label);
-        bar.appendChild(track);
-        bar.appendChild(value);
-        bars.appendChild(bar);
-      });
-
-      const reason = document.createElement('p');
-      reason.className = 'result__reason';
-      reason.textContent = rationale;
-
-      const actions = document.createElement('div');
-      actions.className = 'result__actions';
-
-      const copyBtn = document.createElement('button');
-      copyBtn.className = 'btn btn--primary';
-      copyBtn.type = 'button';
-      copyBtn.textContent = '复制结果链接';
-      copyBtn.addEventListener('click', () => {
-        const encoded = encodeAnswers(answers);
-        const url = new URL(window.location.href);
-        url.searchParams.set('a', encoded);
-        url.hash = 'result';
-        url.searchParams.delete('suggest');
-        navigator.clipboard?.writeText(url.toString()).then(() => {
-          copyBtn.textContent = '已复制';
-          setTimeout(() => (copyBtn.textContent = '复制结果链接'), 1800);
-        }).catch(() => {
-          window.prompt('复制此链接', url.toString());
-        });
-      });
-
-      const printBtn = document.createElement('button');
-      printBtn.className = 'btn btn--ghost';
-      printBtn.type = 'button';
-      printBtn.textContent = '打印';
-      printBtn.addEventListener('click', () => window.print());
-
-      const restartBtn = document.createElement('button');
-      restartBtn.className = 'btn btn--ghost';
-      restartBtn.type = 'button';
-      restartBtn.textContent = '重新开始';
-      restartBtn.addEventListener('click', () => {
-        clearState();
-        window.location.href = 'quiz.html#start';
-      });
-
-      actions.appendChild(copyBtn);
-      actions.appendChild(printBtn);
-      actions.appendChild(restartBtn);
-
-      const mascotWrap = document.createElement('img');
-      mascotWrap.className = 'mascot';
-      mascotWrap.src = 'brand/mascot.svg';
-      mascotWrap.alt = '小诺灵光一现';
-      mascotWrap.dataset.state = 'idea';
-
-      const wrapper = document.createElement('div');
-      wrapper.className = 'result';
-      wrapper.appendChild(title);
-      wrapper.appendChild(mascotWrap);
-      wrapper.appendChild(bars);
-      wrapper.appendChild(reason);
-      wrapper.appendChild(actions);
-
-      resultSlide.appendChild(wrapper);
-    }
+export function scoreEngine(answerMap = {}) {
+  const features = toFeatures(answerMap);
+  const raw = {};
+  let maxRaw = -Infinity;
+  for (const dest of DESTINATIONS) {
+    const total = dot(WEIGHT_MATRIX[dest], features) + BIAS[dest];
+    raw[dest] = total;
+    if (total > maxRaw) maxRaw = total;
   }
+  const exp = {};
+  let sum = 0;
+  for (const dest of DESTINATIONS) {
+    const value = Math.exp(raw[dest] - maxRaw);
+    exp[dest] = value;
+    sum += value;
+  }
+  const totals = {};
+  for (const dest of DESTINATIONS) {
+    totals[dest] = Math.round((exp[dest] / sum) * 1000) / 10;
+  }
+  const ranking = DESTINATIONS.slice().sort((a, b) => totals[b] - totals[a]);
+  const top = ranking[0];
+  const reasons = buildRationale(top, features);
+  return { totals, ranking, rationale: reasons, features };
+}
 
-  if (typeof document !== 'undefined') {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', setupBrowser);
+function buildRationale(destination, features) {
+  const weights = WEIGHT_MATRIX[destination];
+  const contributions = [];
+  for (let i = 0; i < features.length; i += 1) {
+    const value = features[i] * weights[i];
+    if (value <= 0) continue;
+    const key = FEATURE_KEYS[i];
+    if (!FEATURE_REASONS[key]) continue;
+    contributions.push({ key, value });
+  }
+  contributions.sort((a, b) => b.value - a.value);
+  const topReasons = contributions.slice(0, 2).map((item) => FEATURE_REASONS[item.key]);
+  if (topReasons.length) {
+    return `你${topReasons.join("，")}，${DEST_LABELS[destination]}更合适。`;
+  }
+  return `目前答案比较平均，小诺建议你回头再看一遍问题。`;
+}
+
+export function serializeAnswers(answerMap = {}) {
+  const payload = QUESTIONS.map((q) => answerMap[q.id] ?? "skip");
+  return payload.map((entry) => encodeURIComponent(entry)).join(".");
+}
+
+export function parseAnswers(serial = "") {
+  if (!serial) return {};
+  const cleaned = serial.trim();
+  if (!cleaned) return {};
+  const parts = cleaned.split(".").map((chunk) => decodeURIComponent(chunk));
+  const restored = {};
+  parts.forEach((value, index) => {
+    const question = QUESTIONS[index];
+    if (!question) return;
+    if (value && value !== "skip") {
+      restored[question.id] = value;
     } else {
-      setupBrowser();
+      restored[question.id] = "skip";
+    }
+  });
+  return restored;
+}
+
+function loadState() {
+  if (typeof localStorage === "undefined") return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object") return null;
+    const answers = parsed.answers ?? {};
+    const index = Number.isInteger(parsed.index) ? parsed.index : 0;
+    return { answers, index };
+  } catch (error) {
+    console.warn("无法解析本地存储", error);
+    return null;
+  }
+}
+
+function saveState(state) {
+  if (typeof localStorage === "undefined") return;
+  const payload = JSON.stringify({ answers: state.answers, index: state.index });
+  localStorage.setItem(STORAGE_KEY, payload);
+}
+
+function clearState() {
+  if (typeof localStorage === "undefined") return;
+  localStorage.removeItem(STORAGE_KEY);
+}
+
+function setupYear() {
+  const span = document.querySelector("[data-year]");
+  if (span) {
+    span.textContent = new Date().getFullYear();
+  }
+}
+
+async function injectMascots() {
+  if (typeof document === "undefined") return;
+  const shells = Array.from(document.querySelectorAll("[data-mascot]"));
+  if (!shells.length) return;
+  try {
+    const response = await fetch("brand/mascot.svg");
+    const text = await response.text();
+    const parser = new DOMParser();
+    const svgDoc = parser.parseFromString(text, "image/svg+xml");
+    const template = svgDoc.documentElement;
+    shells.forEach((shell) => {
+      const clone = template.cloneNode(true);
+      clone.classList.add('mascot');
+      clone.setAttribute("data-state", shell.getAttribute("data-state") || "curious");
+      clone.setAttribute("aria-hidden", "true");
+      shell.replaceWith(clone);
+    });
+  } catch (error) {
+    console.warn("吉祥物加载失败", error);
+  }
+}
+
+function initIndex() {
+  const chips = document.querySelectorAll(".chip[data-suggest]");
+  chips.forEach((chip) => {
+    chip.addEventListener("click", () => {
+      const target = chip.getAttribute("data-suggest");
+      window.location.href = `quiz.html?suggest=${encodeURIComponent(target)}#start`;
+    });
+  });
+}
+
+function initLearn() {
+  // Mascot injection already handled globally
+}
+
+function initQuiz() {
+  const quizRoot = document.querySelector("[data-quiz]");
+  if (!quizRoot) return;
+  const intro = quizRoot.querySelector("[data-intro]");
+  const flow = quizRoot.querySelector("[data-flow]");
+  const result = quizRoot.querySelector("[data-result]");
+  const questionSlot = quizRoot.querySelector("[data-question]");
+  const helper = quizRoot.querySelector("[data-helper]");
+  const helperToggle = helper.querySelector(".helper-toggle");
+  const helperBody = helper.querySelector(".helper-body");
+  const progressBar = flow.querySelector(".progress-bar");
+  const progressCount = flow.querySelector("[data-progress-count]");
+  const suggestion = flow.querySelector(".suggestion");
+  const shareStatus = result.querySelector('[data-share-status]');
+
+  const params = new URLSearchParams(window.location.search);
+  const suggest = params.get("suggest");
+  if (suggest && DEST_LABELS[suggest]) {
+    suggestion.hidden = false;
+    suggestion.textContent = `建议优先探索：${DEST_LABELS[suggest]}`;
+  }
+
+  let state = loadState() || { answers: {}, index: 0 };
+
+  const shareParam = params.get("a");
+  const fromShare = shareParam ? parseAnswers(shareParam) : null;
+  if (fromShare) {
+    state = { answers: fromShare, index: QUESTIONS.length };
+    saveState(state);
+    intro.hidden = true;
+    flow.hidden = true;
+    result.hidden = false;
+    renderResult(result, state.answers);
+    requestAnimationFrame(() => {
+      if (!window.location.hash.includes("result")) {
+        window.location.hash = "result";
+      }
+    });
+    return;
+  }
+
+  const startButton = quizRoot.querySelector('[data-action="begin"]');
+  startButton?.addEventListener("click", () => {
+    startFlow();
+  });
+
+  helperToggle.addEventListener("click", () => {
+    const expanded = helperToggle.getAttribute("aria-expanded") === "true";
+    helperToggle.setAttribute("aria-expanded", String(!expanded));
+    helperBody.hidden = expanded;
+  });
+
+  quizRoot.addEventListener("click", (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLElement)) return;
+    const action = target.getAttribute("data-action");
+    if (!action) return;
+    event.preventDefault();
+    if (action === "restart") {
+      clearState();
+      state = { answers: {}, index: 0 };
+      intro.hidden = false;
+      flow.hidden = true;
+      result.hidden = true;
+      suggestion.hidden = !suggest;
+      helperBody.hidden = true;
+      helperToggle.setAttribute("aria-expanded", "false");
+      if (shareStatus) {
+        shareStatus.hidden = true;
+        shareStatus.textContent = "";
+      }
+      if (window.location.hash !== "") window.location.hash = "";
+    }
+    if (action === "begin") {
+      startFlow();
+    }
+    if (action === "share") {
+      shareResult(state.answers);
+    }
+    if (action === "print") {
+      window.print();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (flow.hidden) return;
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      goTo(state.index + 1);
+    }
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      goTo(state.index - 1);
+    }
+  });
+
+  const startHash = window.location.hash;
+  if (startHash === "#start" || state.index > 0 || Object.keys(state.answers).length) {
+    startFlow();
+  }
+
+  function startFlow() {
+    intro.hidden = true;
+    flow.hidden = false;
+    result.hidden = true;
+    const pendingIndex = QUESTIONS.findIndex((q) => state.answers[q.id] === undefined);
+    const target = pendingIndex === -1 ? Math.min(state.index, QUESTIONS.length - 1) : pendingIndex;
+    goTo(target);
+    updateProgress();
+  }
+
+  function goTo(index) {
+    const bounded = Math.max(0, Math.min(index, QUESTIONS.length - 1));
+    state.index = bounded;
+    saveState(state);
+    renderQuestion(questionSlot, bounded, state.answers);
+    updateProgress();
+    helperBody.hidden = true;
+    helperToggle.setAttribute("aria-expanded", "false");
+    helperBody.querySelector("p").textContent = QUESTIONS[bounded].helper;
+  }
+
+  function updateProgress() {
+    const answered = QUESTIONS.filter((q) => state.answers[q.id] !== undefined).length;
+    const percent = Math.round((answered / QUESTIONS.length) * 100);
+    progressBar.style.width = `${percent}%`;
+    progressCount.textContent = String(percent);
+  }
+
+  function selectAnswer(questionId, value) {
+    state.answers[questionId] = value;
+    saveState(state);
+    const currentIndex = QUESTIONS.findIndex((q) => q.id === questionId);
+    const answered = QUESTIONS.filter((q) => state.answers[q.id] !== undefined).length;
+    if (answered === QUESTIONS.length) {
+      renderResult(result, state.answers);
+      flow.hidden = true;
+      result.hidden = false;
+      window.location.hash = "result";
+      return;
+    }
+    const nextIndex = Math.min(currentIndex + 1, QUESTIONS.length - 1);
+    goTo(nextIndex);
+  }
+
+  function renderQuestion(container, index, answers) {
+    const question = QUESTIONS[index];
+    container.innerHTML = "";
+    const title = document.createElement("h2");
+    title.textContent = question.title;
+    const prompt = document.createElement("p");
+    prompt.className = "subtitle";
+    prompt.textContent = question.prompt;
+    const meta = document.createElement("div");
+    meta.className = "question-meta";
+    const counter = document.createElement("span");
+    counter.textContent = `第 ${index + 1} 题 · 共 ${QUESTIONS.length} 题`;
+    const controls = document.createElement("div");
+    controls.className = "question-controls";
+    if (index > 0) {
+      const prev = document.createElement("button");
+      prev.type = "button";
+      prev.className = "inline-action";
+      prev.textContent = "上一题";
+      prev.addEventListener("click", () => goTo(index - 1));
+      controls.appendChild(prev);
+    }
+    if (index < QUESTIONS.length - 1) {
+      const skipInfo = document.createElement("span");
+      skipInfo.textContent = "不确定就点“不了解/跳过”";
+      controls.appendChild(skipInfo);
+    }
+    meta.append(counter, controls);
+    const options = document.createElement("div");
+    options.className = "option-list";
+
+    question.options.forEach((option) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "option";
+      button.textContent = option.label;
+      const selected = answers[question.id] === option.value;
+      if (selected) {
+        button.setAttribute("data-selected", "true");
+      }
+      button.setAttribute("aria-pressed", selected ? "true" : "false");
+      button.addEventListener("click", () => {
+        selectAnswer(question.id, option.value);
+      });
+      options.appendChild(button);
+    });
+
+    container.append(title, prompt, meta, options);
+  }
+
+  function renderResult(section, answers) {
+    const { totals, ranking, rationale } = scoreEngine(answers);
+    section.querySelector("[data-top-destination]").textContent = DEST_LABELS[ranking[0]];
+    const list = section.querySelector(".result-bars");
+    list.innerHTML = "";
+    const status = section.querySelector('[data-share-status]');
+    if (status) status.hidden = true;
+    ranking.forEach((dest) => {
+      const row = document.createElement("div");
+      row.className = "result-row";
+      const name = document.createElement("span");
+      name.textContent = DEST_LABELS[dest];
+      const meter = document.createElement("div");
+      meter.className = "result-meter";
+      const bar = document.createElement("div");
+      bar.style.width = `${totals[dest]}%`;
+      meter.appendChild(bar);
+      const value = document.createElement("span");
+      value.textContent = `${totals[dest]}%`;
+      row.append(name, meter, value);
+      list.appendChild(row);
+    });
+    section.querySelector("[data-rationale]").textContent = rationale;
+  }
+
+  function shareResult(answers) {
+    const serial = serializeAnswers(answers);
+    const base = `${window.location.origin}${window.location.pathname.replace(/[^/]+$/, "")}`;
+    const url = `${base}quiz.html?a=${serial}#result`;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        if (shareStatus) {
+          shareStatus.hidden = false;
+          shareStatus.textContent = "链接已复制，分享给需要的人。";
+        }
+      }).catch(() => {
+        fallbackCopy(url);
+      });
+    } else {
+      fallbackCopy(url);
     }
   }
 
-  const exported = {
-    QUESTIONS,
-    FEATURE_LIST,
-    DESTINATIONS,
-    toFeatures,
-    scoreEngine,
-    encodeAnswers,
-    decodeAnswers
-  };
-
-  if (typeof module !== 'undefined' && module.exports) {
-    module.exports = exported;
-  } else {
-    global.Nori = exported;
+  function fallbackCopy(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "true");
+    textarea.style.position = "absolute";
+    textarea.style.left = "-9999px";
+    document.body.appendChild(textarea);
+    textarea.select();
+    document.execCommand("copy");
+    document.body.removeChild(textarea);
+    if (shareStatus) {
+      shareStatus.hidden = false;
+      shareStatus.textContent = "链接已复制，分享给需要的人。";
+    }
   }
-})(typeof window !== 'undefined' ? window : globalThis);
+}
+
+function boot() {
+  setupYear();
+  injectMascots();
+  const page = document.body?.dataset?.page;
+  if (page === "index") initIndex();
+  if (page === "quiz") initQuiz();
+  if (page === "learn") initLearn();
+}
+
+if (typeof window !== "undefined") {
+  window.addEventListener("DOMContentLoaded", boot);
+}
+
+export default {
+  QUESTIONS,
+  FEATURE_KEYS,
+  toFeatures,
+  scoreEngine,
+  serializeAnswers,
+  parseAnswers
+};
