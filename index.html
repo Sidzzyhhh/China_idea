@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#111111" />
+  <title>你的下一站在哪里？| 小诺导航</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
+  <!-- 不提供 Apple Touch Icon 或 manifest，因仓库限制不提交 PNG/JSON 二进制 -->
+</head>
+<body data-page="index">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header class="site-header">
+    <nav class="nav">
+      <div class="brand-mark">
+        <span class="brand-word">小诺导航</span>
+        <span class="mascot-shell" data-mascot data-state="curious" aria-hidden="true"></span>
+      </div>
+      <div class="nav-links">
+        <a href="learn.html" class="link">资讯</a>
+        <a href="quiz.html" class="button ghost">开始问答</a>
+      </div>
+    </nav>
+  </header>
+  <main id="main" class="landing">
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Navigator Nori</p>
+        <h1 id="hero-title">你的下一站在哪里？</h1>
+        <p class="subtitle">三分钟问答。马上知道：留美、回国，还是第三地。</p>
+        <div class="hero-actions">
+          <a class="button primary" href="quiz.html#start">开始问答</a>
+          <a class="button ghost" href="learn.html">先了解</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-card">
+          <p class="hero-tag">不打分，只问问题</p>
+          <p class="hero-body">答案在你心里，小诺帮你梳理思路。</p>
+        </div>
+      </div>
+    </section>
+    <section class="chips" aria-label="快捷入口">
+      <button class="chip" data-suggest="us">
+        <img src="assets/flags/us.svg" alt="美国" />
+        <span>留在美国</span>
+      </button>
+      <button class="chip" data-suggest="cn">
+        <img src="assets/flags/cn.svg" alt="中国" />
+        <span>回到中国</span>
+      </button>
+      <button class="chip" data-suggest="third">
+        <img src="assets/flags/globe.svg" alt="第三地" />
+        <span>探索第三地</span>
+      </button>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <p>© <span data-year></span> 小诺导航 · 本工具仅供参考 · <a href="#" class="link muted">隐私说明</a></p>
+  </footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

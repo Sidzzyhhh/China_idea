@@ -1,0 +1,10 @@
+{
+  "name": "nori-navigator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npx serve -l 8000 . || python -m http.server 8000",
+    "test": "node tests/no-binary.test.js && node tests/unit.test.js",
+    "preview": "npx serve -l 8000 ."
+  }
+}
