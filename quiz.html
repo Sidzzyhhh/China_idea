@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101114">
+  <title>答题 - 小诺的方向雷达</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body class="theme-dark">
+  <a class="skip-link" href="#main">跳到主要内容</a>
+  <header>
+    <nav data-nav="main" class="nav">
+      <a class="nav__brand" href="index.html">小诺雷达</a>
+      <div class="nav__links">
+        <a href="learn.html">资讯</a>
+        <a href="quiz.html#start" data-action="restart">重新开始</a>
+      </div>
+    </nav>
+  </header>
+  <main id="main">
+    <section data-hero="main" class="hero hero--compact">
+      <div class="hero__copy">
+        <p class="eyebrow">不打分，只问问题</p>
+        <h1 class="hero__title">小诺陪你拆解路线</h1>
+        <p class="hero__subtitle">引导页：不打分，只问问题；答案在你心里。</p>
+        <button class="btn btn--primary" data-start>我准备好了</button>
+        <button class="btn btn--ghost" data-skip-intro>直接进入第 1 题</button>
+        <details class="note">
+          <summary>小提示</summary>
+          <p>第一反应通常最真诚。也随时可以选“不确定”。</p>
+        </details>
+      </div>
+      <figure class="hero__visual hero__visual--compact">
+        <img class="mascot" src="brand/mascot.svg" alt="小诺思考中" data-state="thinking">
+        <div class="suggestion" role="status" aria-live="polite" hidden></div>
+      </figure>
+    </section>
+
+    <div data-progress="line" class="progress" aria-hidden="true">
+      <div class="progress__bar"></div>
+    </div>
+
+    <section id="slides" class="slides" aria-live="polite" aria-label="问答流程">
+      <!-- JS 注入题目与结果 -->
+    </section>
+  </main>
+  <footer class="footer">
+    <small>这是此刻的你；过段时间再来，可能会变。</small>
+  </footer>
+</body>
+</html>

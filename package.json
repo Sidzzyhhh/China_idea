@@ -1,0 +1,10 @@
+{
+  "name": "nori-direction",
+  "version": "1.0.0",
+  "type": "commonjs",
+  "scripts": {
+    "dev": "npx serve -l 8000 . || python -m http.server 8000",
+    "test": "node ./tests/unit.test.js",
+    "preview": "npx serve -l 8000 ."
+  }
+}
