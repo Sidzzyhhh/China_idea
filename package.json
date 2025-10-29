@@ -1,0 +1,9 @@
+{
+  "name": "china-idea",
+  "version": "1.0.0",
+  "description": "Decision helper for Chinese international students evaluating post-study paths.",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/score.test.js"
+  }
+}
