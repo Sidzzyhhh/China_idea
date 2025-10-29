@@ -1,64 +1,274 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#111111" />
-  <title>你的下一站在哪里？| 小诺导航</title>
-  <link rel="stylesheet" href="styles.css" />
-  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg" />
-  <!-- 不提供 Apple Touch Icon 或 manifest，因仓库限制不提交 PNG/JSON 二进制 -->
-</head>
-<body data-page="index">
-  <a class="skip-link" href="#main">跳到主要内容</a>
-  <header class="site-header">
-    <nav class="nav">
-      <div class="brand-mark">
-        <span class="brand-word">小诺导航</span>
-        <span class="mascot-shell" data-mascot data-state="curious" aria-hidden="true"></span>
-      </div>
-      <div class="nav-links">
-        <a href="learn.html" class="link">资讯</a>
-        <a href="quiz.html" class="button ghost">开始问答</a>
-      </div>
-    </nav>
-  </header>
-  <main id="main" class="landing">
-    <section class="hero" aria-labelledby="hero-title">
-      <div class="hero-copy">
-        <p class="eyebrow">Navigator Nori</p>
-        <h1 id="hero-title">你的下一站在哪里？</h1>
-        <p class="subtitle">三分钟问答。马上知道：留美、回国，还是第三地。</p>
-        <div class="hero-actions">
-          <a class="button primary" href="quiz.html#start">开始问答</a>
-          <a class="button ghost" href="learn.html">先了解</a>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crossroads Lab · 留学路径评估</title>
+    <title>留学去向决策矩阵</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="topbar" role="banner">
+      <div class="topbar-inner">
+        <a class="badge" href="index.html">Crossroads Lab</a>
+        <nav class="nav" aria-label="主要导航">
+          <a href="#overview">概览</a>
+          <a href="#method">方法</a>
+          <a href="#modules">模块</a>
+        </nav>
+        <div class="button-row">
+          <button class="ghost-btn" id="viewFlow">查看问答流程</button>
+          <a class="primary-btn" href="guide.html">开始填写</a>
         </div>
       </div>
-      <div class="hero-visual">
-        <div class="hero-card">
-          <p class="hero-tag">不打分，只问问题</p>
-          <p class="hero-body">答案在你心里，小诺帮你梳理思路。</p>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero" id="overview">
+        <div class="hero-grid">
+          <div>
+            <span class="hero-kicker">决策工具箱</span>
+            <h1>一份可替换主题的问答式评分框架</h1>
+            <p class="subtitle">
+              针对“去哪里继续发展”这类高权重决策，我们将访谈洞察、市场脉冲与个人底层需求压缩成六个可调变量。后续仅需替换文案即可适配不同场景。
+            </p>
+            <div class="chips" role="list">
+              <span role="listitem">博士申请与资金续航</span>
+              <span role="listitem">身份与全球流动</span>
+              <span role="listitem">家庭与现金流</span>
+            </div>
+            <div class="button-row">
+              <a class="primary-btn" href="guide.html">立即进入问答</a>
+              <a class="arrow-link" href="result.html">查看演示结果</a>
+            </div>
+          </div>
+          <article class="hero-card" aria-label="矩阵预览">
+            <div class="hero-card-header">
+              <span>Regression Matrix</span>
+              <span>v1.2</span>
+            </div>
+            <div class="matrix-preview" aria-hidden="true">
+              <span>因素</span>
+              <span>留美</span>
+              <span>回国</span>
+              <span>第三地</span>
+              <span>职业动能</span>
+              <span>0.92</span>
+              <span>0.71</span>
+              <span>0.76</span>
+              <span>签证稳定</span>
+              <span>0.48</span>
+              <span>0.95</span>
+              <span>0.63</span>
+              <span>科研资金</span>
+              <span>0.68</span>
+              <span>0.82</span>
+              <span>0.74</span>
+              <span>生活成本</span>
+              <span>0.55</span>
+              <span>0.76</span>
+              <span>0.69</span>
+            </div>
+            <p class="subtitle">
+              所有参数均为可替换占位值：可接入真实调研或企业内部数据，快速生成针对性的决策叙事。
+            </p>
+          </article>
         </div>
-      </div>
-    </section>
-    <section class="chips" aria-label="快捷入口">
-      <button class="chip" data-suggest="us">
-        <img src="assets/flags/us.svg" alt="美国" />
-        <span>留在美国</span>
-      </button>
-      <button class="chip" data-suggest="cn">
-        <img src="assets/flags/cn.svg" alt="中国" />
-        <span>回到中国</span>
-      </button>
-      <button class="chip" data-suggest="third">
-        <img src="assets/flags/globe.svg" alt="第三地" />
-        <span>探索第三地</span>
-      </button>
-    </section>
-  </main>
-  <footer class="site-footer">
-    <p>© <span data-year></span> 小诺导航 · 本工具仅供参考 · <a href="#" class="link muted">隐私说明</a></p>
-  </footer>
-  <script type="module" src="app.js"></script>
-</body>
+      </section>
+
+      <section class="section" id="method">
+        <header>
+          <span class="hero-kicker">流程节点</span>
+          <h2>三个页面，让复杂抉择保持紧凑</h2>
+          <p>
+            Landing 页面用于阐述框架价值；问答页以单问题节奏收集偏好；结果页输出排序、差距与后续动作。这套结构可直接部署在静态空间。
+          </p>
+        </header>
+        <div class="section-grid">
+          <div class="card">
+            <h3>01 · 引导页</h3>
+            <p>聚焦品牌语调与价值陈述，引导用户点击问答按钮，无须冗余说明。</p>
+          </div>
+          <div class="card">
+            <h3>02 · 问答页</h3>
+            <p>逐题呈现权重滑杆与提示标签，自动保存进度，适合手机端短时操作。</p>
+          </div>
+          <div class="card">
+            <h3>03 · 结果页</h3>
+            <p>输出路径排序、敏感变量与下一步建议，一键返回继续微调。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="modules">
+        <header>
+          <span class="hero-kicker">模块示例</span>
+          <h2>权重变量与资源提示均可快速替换</h2>
+          <p>
+            每个变量附带标签、上下限语句与参考线索，既能给出方向，也保留用户自行查证的空间。
+          </p>
+        </header>
+        <div class="section-grid">
+          <div class="card">
+            <h3>职业动能</h3>
+            <p>聚焦行业脉冲、招聘窗口与薪资区间。</p>
+          </div>
+          <div class="card">
+            <h3>身份确定性</h3>
+            <p>兼顾签证抽签概率、续签成本与配偶身份。</p>
+          </div>
+          <div class="card">
+            <h3>科研与资金</h3>
+            <p>关注导师经费、奖学金政策与替代方案。</p>
+          </div>
+          <div class="card">
+            <h3>现金流安全</h3>
+            <p>结合生活成本、家庭支持与税制变化。</p>
+          </div>
+        </div>
+        <a class="arrow-link" href="guide.html">进入问答页面</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2025 Crossroads Lab · 数据保留在本地浏览器，适合直接静态部署</p>
+    </footer>
+
+    <script type="module" src="scripts/landing.js"></script>
+    <header class="topbar">
+      <div class="badge">Crossroads Lab</div>
+      <nav class="nav">
+        <span>现状扫描</span>
+        <span>自定义权重</span>
+        <span>建议与资源</span>
+      </nav>
+      <button class="ghost-btn" id="scrollToScoring">立即评估</button>
+    </header>
+    <main>
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-grid">
+          <div class="hero-text">
+            <p class="eyebrow">简洁，不妥协</p>
+            <h1 id="hero-title">留美、回国或第三地？一分钟构建自己的选择矩阵</h1>
+            <p class="subtitle">
+              结合H-1B抽签率、导师经费波动、行业裁员、全球 mobility 等数据点，量化你当前的真实优先级。
+            </p>
+            <div class="quick-tags" role="list">
+              <span role="listitem">OPT 签证窗口</span>
+              <span role="listitem">STEM 招聘动能</span>
+              <span role="listitem">家庭安全感</span>
+            </div>
+            <button class="primary-btn" id="startScoring">开始构建决策面板</button>
+          </div>
+          <div class="hero-card" aria-label="决策示意图">
+            <div class="hero-card-header">Regression Matrix</div>
+            <div class="hero-card-body">
+              <div class="matrix-row">
+                <span>因素</span>
+                <span>留美</span>
+                <span>回国</span>
+                <span>第三地</span>
+              </div>
+              <div class="matrix-row">
+                <span>职业动能</span>
+                <span>0.92</span>
+                <span>0.71</span>
+                <span>0.76</span>
+              </div>
+              <div class="matrix-row">
+                <span>签证确定性</span>
+                <span>0.48</span>
+                <span>0.95</span>
+                <span>0.63</span>
+              </div>
+              <div class="matrix-row">
+                <span>科研与资金</span>
+                <span>0.68</span>
+                <span>0.82</span>
+                <span>0.74</span>
+              </div>
+              <div class="matrix-row">
+                <span>生活与支持</span>
+                <span>0.64</span>
+                <span>0.88</span>
+                <span>0.79</span>
+              </div>
+              <p class="card-footnote">可根据个人权重实时更新</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="scoring" id="scoring">
+        <header class="section-header">
+          <div>
+            <p class="eyebrow">评分界面</p>
+            <h2>个性化权重，刻画你的关键变量</h2>
+          </div>
+          <p class="section-subtext">
+            滑块越高表示你越重视该项；系统将结合回归矩阵对三种去向实时评分。
+          </p>
+        </header>
+        <div class="scoring-grid" id="factorGrid" aria-live="polite"></div>
+        <aside class="insight-panel" id="insightPanel" aria-live="polite">
+          <h3>即时洞察</h3>
+          <p class="insight-lead">权重调整后，这里会给出最直观的 tension &amp; gain。</p>
+          <dl id="insightList"></dl>
+        </aside>
+      </section>
+
+      <section class="result" id="result">
+        <header class="section-header compact">
+          <div>
+            <p class="eyebrow">结果界面</p>
+            <h2>结果更新完毕，保持决策紧凑</h2>
+          </div>
+          <div class="result-tags">
+            <span>实时排名</span>
+            <span>敏感度提示</span>
+            <span>下一步动作</span>
+          </div>
+        </header>
+        <div class="result-grid">
+          <div class="scoreboard">
+            <h3>路径得分</h3>
+            <div id="scoreboard"></div>
+            <p class="score-footnote">基于0-100标准化得分，兼顾权重与矩阵基准。</p>
+          </div>
+          <div class="callouts" id="callouts" aria-live="polite"></div>
+          <div class="resources">
+            <h3>进一步验证</h3>
+            <ul>
+              <li>
+                <span class="dot"></span>
+                <span>领英 + 51Job 双向岗位清单，确认行业窗口</span>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <span>学校 Funding Dashboard，留意 RA/TA 删减节奏</span>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <span>USCIS &amp; 移民论坛，追踪 H-1B 政策和 STEM 延期</span>
+              </li>
+              <li>
+                <span class="dot"></span>
+                <span>小红书 / 知乎 留学生社区，交叉验证真实体验</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </main>
+    <footer class="footer">
+      <p>© 2025 Crossroads Lab · 数据只保留在浏览器本地</p>
+    </footer>
+    <script type="module" src="scripts/app.js"></script>
+  </body>
 </html>
