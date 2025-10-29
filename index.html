@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crossroads Lab · 留学路径评估</title>
     <title>留学去向决策矩阵</title>
     <link rel="stylesheet" href="assets/styles.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -13,6 +14,133 @@
     />
   </head>
   <body>
+    <header class="topbar" role="banner">
+      <div class="topbar-inner">
+        <a class="badge" href="index.html">Crossroads Lab</a>
+        <nav class="nav" aria-label="主要导航">
+          <a href="#overview">概览</a>
+          <a href="#method">方法</a>
+          <a href="#modules">模块</a>
+        </nav>
+        <div class="button-row">
+          <button class="ghost-btn" id="viewFlow">查看问答流程</button>
+          <a class="primary-btn" href="guide.html">开始填写</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="page-shell">
+      <section class="hero" id="overview">
+        <div class="hero-grid">
+          <div>
+            <span class="hero-kicker">决策工具箱</span>
+            <h1>一份可替换主题的问答式评分框架</h1>
+            <p class="subtitle">
+              针对“去哪里继续发展”这类高权重决策，我们将访谈洞察、市场脉冲与个人底层需求压缩成六个可调变量。后续仅需替换文案即可适配不同场景。
+            </p>
+            <div class="chips" role="list">
+              <span role="listitem">博士申请与资金续航</span>
+              <span role="listitem">身份与全球流动</span>
+              <span role="listitem">家庭与现金流</span>
+            </div>
+            <div class="button-row">
+              <a class="primary-btn" href="guide.html">立即进入问答</a>
+              <a class="arrow-link" href="result.html">查看演示结果</a>
+            </div>
+          </div>
+          <article class="hero-card" aria-label="矩阵预览">
+            <div class="hero-card-header">
+              <span>Regression Matrix</span>
+              <span>v1.2</span>
+            </div>
+            <div class="matrix-preview" aria-hidden="true">
+              <span>因素</span>
+              <span>留美</span>
+              <span>回国</span>
+              <span>第三地</span>
+              <span>职业动能</span>
+              <span>0.92</span>
+              <span>0.71</span>
+              <span>0.76</span>
+              <span>签证稳定</span>
+              <span>0.48</span>
+              <span>0.95</span>
+              <span>0.63</span>
+              <span>科研资金</span>
+              <span>0.68</span>
+              <span>0.82</span>
+              <span>0.74</span>
+              <span>生活成本</span>
+              <span>0.55</span>
+              <span>0.76</span>
+              <span>0.69</span>
+            </div>
+            <p class="subtitle">
+              所有参数均为可替换占位值：可接入真实调研或企业内部数据，快速生成针对性的决策叙事。
+            </p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="method">
+        <header>
+          <span class="hero-kicker">流程节点</span>
+          <h2>三个页面，让复杂抉择保持紧凑</h2>
+          <p>
+            Landing 页面用于阐述框架价值；问答页以单问题节奏收集偏好；结果页输出排序、差距与后续动作。这套结构可直接部署在静态空间。
+          </p>
+        </header>
+        <div class="section-grid">
+          <div class="card">
+            <h3>01 · 引导页</h3>
+            <p>聚焦品牌语调与价值陈述，引导用户点击问答按钮，无须冗余说明。</p>
+          </div>
+          <div class="card">
+            <h3>02 · 问答页</h3>
+            <p>逐题呈现权重滑杆与提示标签，自动保存进度，适合手机端短时操作。</p>
+          </div>
+          <div class="card">
+            <h3>03 · 结果页</h3>
+            <p>输出路径排序、敏感变量与下一步建议，一键返回继续微调。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section" id="modules">
+        <header>
+          <span class="hero-kicker">模块示例</span>
+          <h2>权重变量与资源提示均可快速替换</h2>
+          <p>
+            每个变量附带标签、上下限语句与参考线索，既能给出方向，也保留用户自行查证的空间。
+          </p>
+        </header>
+        <div class="section-grid">
+          <div class="card">
+            <h3>职业动能</h3>
+            <p>聚焦行业脉冲、招聘窗口与薪资区间。</p>
+          </div>
+          <div class="card">
+            <h3>身份确定性</h3>
+            <p>兼顾签证抽签概率、续签成本与配偶身份。</p>
+          </div>
+          <div class="card">
+            <h3>科研与资金</h3>
+            <p>关注导师经费、奖学金政策与替代方案。</p>
+          </div>
+          <div class="card">
+            <h3>现金流安全</h3>
+            <p>结合生活成本、家庭支持与税制变化。</p>
+          </div>
+        </div>
+        <a class="arrow-link" href="guide.html">进入问答页面</a>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2025 Crossroads Lab · 数据保留在本地浏览器，适合直接静态部署</p>
+    </footer>
+
+    <script type="module" src="scripts/landing.js"></script>
     <header class="topbar">
       <div class="badge">Crossroads Lab</div>
       <nav class="nav">
