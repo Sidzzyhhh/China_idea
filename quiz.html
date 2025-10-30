@@ -1,6 +1,86 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <title>小诺方向盘 · 问答</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body data-page="quiz">
+  <a class="skip-link" href="#quiz-flow">跳到问答</a>
+  <header class="site-header">
+    <nav data-nav="main" aria-label="主导航">
+      <div class="brand-mark">
+        <img src="brand/mascot.svg" alt="小诺罗盘" data-state="thinking">
+        <span>小诺方向盘</span>
+      </div>
+      <ul class="nav-actions">
+        <li><a href="index.html">首页</a></li>
+        <li><a href="learn.html">资讯</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main" class="site-main">
+    <section data-hero="main" class="hero hero--quiz">
+      <div class="hero-copy">
+        <h1>不打分，只问问题</h1>
+        <p>答案在你心里。小诺记录第一反应，再帮你整理。</p>
+        <button type="button" class="btn" data-action="start">马上开始</button>
+      </div>
+      <figure class="hero-mascot" aria-hidden="true">
+        <img src="brand/mascot.svg" alt="小诺罗盘" data-state="thinking">
+      </figure>
+    </section>
+
+    <section id="quiz-flow" class="quiz-flow" aria-live="polite">
+      <div id="suggestion" class="suggestion" role="status" hidden></div>
+      <div data-progress="line" class="progress" aria-hidden="true">
+        <div class="progress__bar" data-element="bar"></div>
+      </div>
+      <div id="stage" class="quiz-stage" data-stage="intro">
+        <div id="slides" class="slides" role="group" aria-label="问答滑屏"></div>
+        <div id="controls" class="quiz-controls">
+          <button type="button" class="ghost" data-action="prev">上一题</button>
+          <button type="button" class="btn" data-action="next">下一题</button>
+        </div>
+      </div>
+      <section id="results" class="results" hidden>
+        <header>
+          <h2>推荐：<span data-field="headline"></span></h2>
+          <p class="results-note">这是此刻的你；过段时间再来，可能会变。</p>
+        </header>
+        <figure class="results-bars" aria-label="匹配度对比">
+          <div class="bar" data-route="US">
+            <span>留在美国</span>
+            <div class="bar__track"><div class="bar__fill"></div><span class="bar__value"></span></div>
+          </div>
+          <div class="bar" data-route="CN">
+            <span>回到中国</span>
+            <div class="bar__track"><div class="bar__fill"></div><span class="bar__value"></span></div>
+          </div>
+          <div class="bar" data-route="THIRD">
+            <span>探索第三地</span>
+            <div class="bar__track"><div class="bar__fill"></div><span class="bar__value"></span></div>
+          </div>
+        </figure>
+        <p data-field="rationale" class="results-rationale"></p>
+        <div class="results-actions">
+          <button type="button" class="btn" data-action="copy">复制结果链接</button>
+          <button type="button" class="ghost" data-action="print">打印</button>
+          <button type="button" class="ghost" data-action="restart">重新开始</button>
+        </div>
+        <footer class="results-footer">
+          <img src="brand/mascot.svg" alt="小诺罗盘" data-state="idea">
+        </footer>
+      </section>
+    </section>
+  </main>
+  <footer class="site-footer">
+    <small>© 2024 小诺方向盘 · 结果仅供参考</small>
+  </footer>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#111111" />

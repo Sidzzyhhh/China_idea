@@ -1,5 +1,62 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111111">
+  <title>小诺方向盘 · 首页</title>
+  <link rel="icon" type="image/svg+xml" href="assets/icons/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+  <script defer src="app.js"></script>
+</head>
+<body data-page="home">
+  <a class="skip-link" href="#main">跳到主内容</a>
+  <header class="site-header">
+    <nav data-nav="main" aria-label="主导航">
+      <div class="brand-mark">
+        <img src="brand/mascot.svg" alt="小诺罗盘" data-state="curious">
+        <span>小诺方向盘</span>
+      </div>
+      <ul class="nav-actions">
+        <li><a href="learn.html">资讯</a></li>
+        <li><a class="pill" href="quiz.html#start">开始问答</a></li>
+      </ul>
+    </nav>
+  </header>
+  <main id="main" class="site-main">
+    <section data-hero="main" class="hero">
+      <div class="hero-copy">
+        <h1>你的下一站在哪里？</h1>
+        <p>把纠结拆成小问题，用你的答案拼出方向。</p>
+        <div class="hero-cta">
+          <a class="btn" href="quiz.html#start">开始问答</a>
+          <a class="ghost" href="learn.html">看看资源</a>
+        </div>
+      </div>
+      <figure class="hero-mascot" aria-hidden="true">
+        <img src="brand/mascot.svg" alt="小诺罗盘" data-state="curious">
+      </figure>
+    </section>
+
+    <aside data-matrix="card" class="matrix-card" aria-label="回归矩阵提示">
+      <h2>模型怎么想</h2>
+      <p>小诺把你的回答转成 7 组特征，用线性回归组合出留美、回国、第三地的匹配度。分数不会展示，只给结论。</p>
+      <dl>
+        <div>
+          <dt>特征</dt>
+          <dd>职业舞台 · 身份路径 · 收入成本 · 生活方式 · 学术路线 · 支持网络 · 长期认同</dd>
+        </div>
+        <div>
+          <dt>偏置</dt>
+          <dd>偏向中性，防止空答案倾斜。</dd>
+        </div>
+      </dl>
+    </aside>
+  </main>
+  <footer class="site-footer">
+    <small>© 2024 小诺方向盘 · 答案只代表此刻的你</small>
+  </footer>
+</body>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
