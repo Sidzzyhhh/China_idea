@@ -1,0 +1,10 @@
+{
+  "name": "navigator-nori",
+  "version": "1.0.0",
+  "description": "深色极简问答式去向选择网站",
+  "scripts": {
+    "dev": "npx serve -l 8000 . || python -m http.server 8000",
+    "test": "node ./tests/unit.test.js",
+    "preview": "npx serve -l 8000 ."
+  }
+}

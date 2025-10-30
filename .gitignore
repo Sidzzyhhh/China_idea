@@ -1,0 +1,15 @@
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico
+*.icns
+*.pdf
+*.woff
+*.woff2
+*.ttf
+*.otf
+*.eot
+dist/
+.DS_Store

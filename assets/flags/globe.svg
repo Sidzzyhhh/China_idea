@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" role="img" aria-label="全球">
+  <rect width="24" height="16" fill="#0f172a" rx="4" />
+  <g stroke="#3ddbd9" stroke-width="0.8" fill="none">
+    <ellipse cx="12" cy="8" rx="9" ry="5.8" />
+    <ellipse cx="12" cy="8" rx="5" ry="5.6" />
+    <path d="M3 8h18" />
+    <path d="M12 2v12" />
+  </g>
+  <circle cx="12" cy="8" r="1.6" fill="#3ddbd9" />
+</svg>

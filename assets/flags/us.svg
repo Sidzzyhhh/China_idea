@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 16" role="img" aria-label="美国">
+  <rect width="24" height="16" fill="#b22234" />
+  <g fill="#fff">
+    <rect y="2" width="24" height="1" />
+    <rect y="4" width="24" height="1" />
+    <rect y="6" width="24" height="1" />
+    <rect y="8" width="24" height="1" />
+    <rect y="10" width="24" height="1" />
+    <rect y="12" width="24" height="1" />
+    <rect y="14" width="24" height="1" />
+  </g>
+  <rect width="10" height="7" fill="#3c3b6e" />
+  <g fill="#fff" transform="scale(0.04)">
+    <g id="s">
+      <polygon points="35 4 43 26 66 26 47 39 55 61 35 48 15 61 23 39 4 26 27 26" />
+    </g>
+    <use href="#s" x="120" />
+    <use href="#s" x="240" />
+    <use href="#s" x="360" />
+    <use href="#s" x="60" y="80" />
+    <use href="#s" x="180" y="80" />
+    <use href="#s" x="300" y="80" />
+    <use href="#s" x="420" y="80" />
+    <use href="#s" x="0" y="160" />
+    <use href="#s" x="120" y="160" />
+    <use href="#s" x="240" y="160" />
+  </g>
+</svg>
