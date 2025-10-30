@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>问答流程 · Crossroads Lab</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="topbar" role="banner">
+      <div class="topbar-inner">
+        <a class="badge" href="index.html">Crossroads Lab</a>
+        <nav class="nav" aria-label="辅助导航">
+          <a href="index.html#overview">返回概览</a>
+          <a href="result.html">查看演示结果</a>
+        </nav>
+        <a class="ghost-btn" href="result.html">暂存并查看</a>
+      </div>
+    </header>
+
+    <main class="page-shell flow-layout" aria-live="polite">
+      <section>
+        <div class="flow-header">
+          <span class="hero-kicker">问答流程</span>
+          <h1>逐条确认关键变量，自动保存你的偏好</h1>
+          <p class="subtitle">
+            文案均为占位示例，可替换为不同主题。每次调整都会同步至本地存储，刷新或切换设备前都可以随时停留。
+          </p>
+          <div class="progress-list" id="progressList" role="list"></div>
+        </div>
+
+        <article class="flow-card" aria-live="polite">
+          <header>
+            <h2 id="factorTitle">职业动能</h2>
+            <span class="factor-pill" id="factorTag">STEM / 金融 / 咨询窗口</span>
+          </header>
+          <p class="factor-description" id="factorDescription">
+            聚焦行业脉冲、招聘窗口与薪资区间。
+          </p>
+          <div class="cue-row" id="factorCues"></div>
+          <div class="slider-stack">
+            <div class="slider-labels" id="sliderLabels">
+              <span>可以慢慢来</span>
+              <span>必须立即兑现</span>
+            </div>
+            <input type="range" min="0" max="10" value="5" id="factorSlider" aria-labelledby="factorTitle" />
+            <div class="slider-value" id="sliderValue">权重：5</div>
+          </div>
+        </article>
+
+        <div class="flow-actions">
+          <button class="ghost-btn" id="prevButton">上一题</button>
+          <div class="button-row">
+            <button class="ghost-btn" id="resetButton">重置当前</button>
+            <button class="primary-btn" id="nextButton">下一题</button>
+            <a class="primary-btn" id="finishButton" href="result.html" hidden>生成结果</a>
+          </div>
+        </div>
+      </section>
+
+      <aside class="flow-aside">
+        <div class="aside-card">
+          <h3>流程提示</h3>
+          <div class="aside-list" id="asideSummary"></div>
+        </div>
+        <div class="aside-card">
+          <h3>进度快照</h3>
+          <div class="aside-stat">
+            <span>已完成</span>
+            <span id="completedCount">0/0</span>
+          </div>
+          <div class="aside-list" id="weightPreview"></div>
+        </div>
+        <div class="aside-card">
+          <h3>下阶段建议</h3>
+          <div class="aside-list">
+            <span>将本页导出为 PDF，即可快速提交给导师或职业教练。</span>
+            <span>根据实际主题替换提示语，保持语调一致即可。</span>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="footer">
+      <p>没有用户数据上传服务器，所有回答保留在本地 Session Storage 中。</p>
+    </footer>
+
+    <script type="module" src="scripts/flow.js"></script>
+  </body>
+</html>

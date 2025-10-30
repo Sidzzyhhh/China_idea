@@ -18,5 +18,83 @@
     <circle r="6" fill="#0b0b0b" stroke="#3ddbd9" stroke-width="2" />
     <path d="M0 -36 L6 0 L0 30 L-6 0 Z" fill="#3ddbd9" opacity="0.85" />
     <path d="M0 -36 L-4 -12 L0 0 Z" fill="#0d3432" opacity="0.9" />
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" data-state="curious" role="img" aria-labelledby="title desc">
+  <title id="title">小诺导航吉祥物</title>
+  <desc id="desc">一枚思考方向的小罗盘</desc>
+  <style>
+    :root {
+      --line: #0d0f14;
+      --fill: #ffffff;
+      --accent: #4f8cff;
+    }
+    circle, path, line { transition: transform 220ms ease; }
+    @media (prefers-reduced-motion: reduce) {
+      circle, path, line { transition: none; }
+      .blink { animation: none !important; }
+    }
+    .face {
+      fill: var(--fill);
+      stroke: var(--line);
+      stroke-width: 3;
+    }
+    .ring {
+      fill: none;
+      stroke: var(--line);
+      stroke-width: 2;
+      stroke-dasharray: 6 10;
+      opacity: 0.45;
+    }
+    .needle {
+      stroke: var(--line);
+      stroke-width: 4;
+      stroke-linecap: round;
+    }
+    .tip { fill: var(--accent); }
+    .eye { fill: var(--line); }
+    .mouth { stroke: var(--line); stroke-width: 3; stroke-linecap: round; }
+    [data-state="curious"] .eye-curious,
+    [data-state="thinking"] .eye-thinking,
+    [data-state="idea"] .eye-idea { opacity: 1; }
+    [data-state="curious"] .mouth-curious,
+    [data-state="thinking"] .mouth-thinking,
+    [data-state="idea"] .mouth-idea { opacity: 1; }
+    .eye-curious,
+    .eye-thinking,
+    .eye-idea,
+    .mouth-curious,
+    .mouth-thinking,
+    .mouth-idea { opacity: 0; }
+    .blink { animation: blink 6s infinite; transform-origin: center; }
+    @keyframes blink {
+      0%, 92%, 100% { transform: scaleY(1); }
+      96% { transform: scaleY(0.1); }
+    }
+    [data-state="thinking"] .needle { transform: rotate(-18deg); transform-origin: 60px 60px; }
+    [data-state="idea"] .needle { transform: rotate(24deg); transform-origin: 60px 60px; }
+  </style>
+  <circle class="face" cx="60" cy="60" r="46" />
+  <circle class="ring" cx="60" cy="60" r="52" />
+  <g class="needle">
+    <line x1="60" y1="32" x2="60" y2="88" />
+    <polygon class="tip" points="60,26 66,40 54,40" />
+  </g>
+  <g class="eyes">
+    <g class="eye eye-curious blink">
+      <circle cx="48" cy="56" r="4" />
+      <circle cx="72" cy="56" r="4" />
+    </g>
+    <g class="eye eye-thinking">
+      <ellipse cx="48" cy="58" rx="5" ry="3" />
+      <ellipse cx="72" cy="54" rx="4" ry="2.4" />
+    </g>
+    <g class="eye eye-idea blink">
+      <circle cx="48" cy="54" r="4" />
+      <path d="M72 50c3 0 5 2 5 5s-2 5-5 5" fill="none" stroke="var(--line)" stroke-width="3" stroke-linecap="round" />
+    </g>
+  </g>
+  <g class="mouths">
+    <path class="mouth mouth-curious" d="M46 74c4 3 16 5 28 0" fill="none" />
+    <path class="mouth mouth-thinking" d="M48 76c6 2 20 2 26-2" fill="none" />
+    <path class="mouth mouth-idea" d="M48 74c5 4 18 4 24 0" fill="none" />
   </g>
 </svg>

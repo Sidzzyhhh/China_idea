@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>结果面板 · Crossroads Lab</title>
+    <link rel="stylesheet" href="assets/styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="topbar" role="banner">
+      <div class="topbar-inner">
+        <a class="badge" href="index.html">Crossroads Lab</a>
+        <nav class="nav" aria-label="辅助导航">
+          <a href="guide.html">回到问答</a>
+          <a href="index.html#method">查看结构</a>
+        </nav>
+        <a class="ghost-btn" href="guide.html">继续微调</a>
+      </div>
+    </header>
+
+    <main class="page-shell result-layout" aria-live="polite">
+      <section class="result-hero">
+        <span class="hero-kicker">结果界面</span>
+        <h1>实时排序与洞察，随时可导出或复盘</h1>
+        <p class="subtitle">
+          根据当前权重生成的回归矩阵得分仅保留在你的浏览器。可以将本页打印为 PDF，与团队或家人讨论，之后返回问答页继续调整。
+        </p>
+        <div class="result-meta" id="resultMeta"></div>
+        <div class="return-row">
+          <a href="guide.html">返回修改答案</a>
+          <a href="index.html">回到引导页</a>
+        </div>
+      </section>
+
+      <section class="result-grid">
+        <article class="scoreboard" aria-labelledby="scoreboardTitle">
+          <h2 id="scoreboardTitle">路径排序</h2>
+          <div id="scoreboard"></div>
+          <p class="subtitle">分值基于0-100标准化区间，考虑权重比例与矩阵基准值。</p>
+        </article>
+        <aside class="insights" aria-labelledby="insightTitle">
+          <h3 id="insightTitle">敏感变量提示</h3>
+          <dl id="insightList"></dl>
+          <div class="weight-recap" id="weightRecap"></div>
+        </aside>
+      </section>
+
+      <section class="section">
+        <header>
+          <span class="hero-kicker">下一步行动</span>
+          <h2>聚焦差距与备选路径，保持节奏</h2>
+        </header>
+        <div class="callouts" id="callouts"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>© 2025 Crossroads Lab · Static deploy ready · 数据不会离开浏览器</p>
+    </footer>
+
+    <script type="module" src="scripts/results.js"></script>
+  </body>
+</html>
